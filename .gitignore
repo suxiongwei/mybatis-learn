@@ -1,2 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 !/.idea/
+!/.gitignore
+!/lib/
+!/mybatis-learn.iml
+target/generated-sources/
+target/generated-test-sources/
