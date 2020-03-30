@@ -21,6 +21,7 @@ import java.io.InputStream;
 public class MyBatisQuickStart {
     private SqlSessionFactory sqlSessionFactory;
 
+    // 源码分析的入口
     @Before
     public void init() throws IOException {
         String resource = "mybatis-config.xml";
