@@ -11,6 +11,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author 苏雄伟 [suxiongwei@kaoshixing.com]
@@ -33,14 +35,33 @@ public class MyBatisQuickStart {
     public void quickStart(){
         // 2.获取sqlSession
         SqlSession sqlSession = sqlSessionFactory.openSession();
-//        SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH);
+    //        SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH);
         // 3.获取对应mapper
         TUserMapper userMapper = sqlSession.getMapper(TUserMapper.class);
         // 4.执行查询语句并返回结果
         TUser user = userMapper.selectByPrimaryKey(1);
         System.out.println(user.toString());
+        // 再查一遍 测试一级缓存
+        TUser user1 = userMapper.selectByPrimaryKey(1);
+        System.out.println(user1.toString());
     }
 
+    @Test
+    public void quickStart1(){
+        // 2.获取sqlSession 这个SqlSession在请求完之后就关闭了
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        // 3.执行查询语句并返回结果
+        TUser user = sqlSession.selectOne("com.sxw.mapper.TUserMapper.selectByPrimaryKey", 1);
+        System.out.println(user.toString());
+        // 再查一遍 测试一级缓存
+        TUser user1 = sqlSession.selectOne("com.sxw.mapper.TUserMapper.selectByPrimaryKey", 1);
+        System.out.println(user1.toString());
+    }
+
+    /**
+     *
+     * @throws IOException
+     */
     @Test
     public void testConfiguration() throws IOException {
         Reader reader = Resources.getResourceAsReader("mybatis-config.xml");
@@ -51,11 +72,22 @@ public class MyBatisQuickStart {
     }
 
     @Test
-    public void testSqlSession() throws IOException {
-        // MyBatis主配置文件输入流
-        Reader reader = Resources.getResourceAsReader("mybatis-config.xml");
-        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
-        SqlSession sqlSession = sqlSessionFactory.openSession();
-    }
+    public void testInsertBatch(){
+        SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH);
+        TUserMapper userMapper = sqlSession.getMapper(TUserMapper.class);
+        for (int i = 0; i < 5; i++) {
+            TUser user = new TUser();
+            user.setSex(1);
+            user.setUserName("孙笑川-" + i);
+            user.setRealName("孙狗-" + i);
+            user.setMobile("17600001111");
+            user.setEmail("sungou@gou.com");
+            user.setNoteDetail("日本天皇");
 
+            userMapper.insert(user);
+        }
+        sqlSession.commit();
+        sqlSession.clearCache();
+        sqlSession.close();
+    }
 }

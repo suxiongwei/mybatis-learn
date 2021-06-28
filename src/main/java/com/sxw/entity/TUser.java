@@ -9,6 +9,6 @@ import lombok.Data;
  */
 @Data
 public class TUser {
-    private Integer id, sex, positionId;
-    private String userName, realName, mobile, email, note;
+    private Integer id, sex;
+    private String userName, realName, mobile, email, noteDetail;
 }

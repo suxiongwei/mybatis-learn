@@ -9,4 +9,6 @@ import com.sxw.entity.TUser;
  */
 public interface TUserMapper {
     TUser selectByPrimaryKey(int id);
+
+    int insert(TUser user);
 }

@@ -8,9 +8,19 @@
         real_name as realName,
         sex,
         mobile,
-        email,
-        note,
-        position_id as positionId
+        email
         from user where id=#{id}
     </select>
+    <insert id="insert" parameterType="com.sxw.entity.TUser">
+        insert into user(user_name,real_name,sex,mobile,email,note_detail)
+        values
+        (
+        #{userName,jdbcType=VARCHAR},
+        #{realName,jdbcType=VARCHAR},
+        #{sex,jdbcType=INTEGER},
+        #{mobile,jdbcType=VARCHAR},
+        #{email,jdbcType=VARCHAR},
+        #{noteDetail,jdbcType=VARCHAR}
+        )
+    </insert>
 </mapper>

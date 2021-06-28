@@ -16,6 +16,8 @@ import org.junit.Test;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author 苏雄伟 [suxiongwei@kaoshixing.com]
@@ -55,5 +57,39 @@ public class ReflectorTest {
         System.out.println(userTmp);
 
 
+
+    }
+
+    @Test
+    public void testReflector(){
+        // 反射工具初始化
+        ObjectFactory objectFactory =  new DefaultObjectFactory();
+        TUser user = objectFactory.create(TUser.class);
+        ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
+        ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
+        MetaObject metaObject = MetaObject.forObject(user, objectFactory, objectWrapperFactory, reflectorFactory);
+
+        // 模拟数据库行数据转换为对象
+        // 1.模拟从数据库读取数据
+        Map<String, Object> dbResult = new HashMap<String, Object>();
+        dbResult.put("id", 1);
+        dbResult.put("user_name", "sungou");
+        dbResult.put("real_name", "孙笑川");
+
+        // 2.模拟映射关系
+        Map<String, String> mapper = new HashMap<String, String>();
+        mapper.put("id", "id");
+        mapper.put("userName", "user_name");
+        mapper.put("realName", "real_name");
+
+        // 3.使用反射工具类将行数据转换为POJO
+        BeanWrapper beanWrapper = (BeanWrapper) metaObject.getObjectWrapper();
+        for (Map.Entry<String, String> colInfo : mapper.entrySet()) {
+            String propName = colInfo.getKey();
+            Object propValue = dbResult.get(colInfo.getValue());
+            PropertyTokenizer propertyTokenizer = new PropertyTokenizer(propName);
+            beanWrapper.set(propertyTokenizer, propValue);
+        }
+        System.out.println(metaObject.getOriginalObject());
     }
 }
